@@ -1,181 +1,399 @@
-📌 Movie Review Sentiment Analysis — Simple RNN (Deep Learning Project)
+# Movie Review Sentiment Analysis
 
-A complete end-to-end deep learning project for binary sentiment analysis on the IMDB Movie Review Dataset using a Simple Recurrent Neural Network (RNN).
-The project includes:
+An end-to-end Natural Language Processing and Deep Learning project for classifying movie reviews as **Positive** or **Negative** using a **Simple Recurrent Neural Network (Simple RNN)**.
 
-Data loading & preprocessing
+**GitHub:** https://github.com/MSIVAPAPARAO13/Movie-Review-Sentiment-Analysis
 
-Word embeddings
+---
 
-Simple RNN model training
+## Project Overview
 
-Sentiment prediction
+This project implements binary sentiment classification on the **IMDB Movie Review Dataset**.
 
-Streamlit web application
+The complete workflow includes:
 
-Model deployment ready code
-
-🚀 Project Overview
-
-This project classifies movie reviews as Positive or Negative using deep learning.
-It uses:
-
-IMDB Movie Reviews Dataset
-
+```text
+IMDB Reviews
+     ↓
 Word Index Encoding
+     ↓
+Sequence Padding
+     ↓
+Word Embedding
+     ↓
+SimpleRNN
+     ↓
+Sigmoid Output
+     ↓
+Positive / Negative Sentiment
+```
 
-Embedding Layer
+A Streamlit application is included for interactive real-time prediction on custom movie reviews.
 
-SimpleRNN Layer
+---
 
-Binary Classification Layer
+## Features
 
-Streamlit Web UI for live prediction
+* Binary movie-review sentiment classification
+* IMDB dataset integration
+* 10,000-word vocabulary
+* Word-index based text representation
+* 128-dimensional word embeddings
+* SimpleRNN sequence modeling
+* 500-token fixed-length input sequences
+* Prediction probability output
+* Positive/Negative classification
+* Interactive Streamlit UI
+* Saved trained Keras model
+* Reproducible development environment
 
-The trained model achieves strong performance and can classify any custom user review.
+---
 
-🧠 Key Features
+## Dataset
 
-✔ End-to-end Deep Learning Pipeline
-✔ Text Preprocessing & Tokenization
-✔ Word Embedding Representation
-✔ SimpleRNN-based Sentiment Model
-✔ Real-Time Prediction with Streamlit
-✔ Clean & Modular Code Structure
-✔ Fully Reproducible Setup
+The project uses the **IMDB Movie Reviews Dataset** provided through TensorFlow/Keras.
 
-📂 Project Structure
+### Dataset Statistics
+
+```text
+Total Reviews : 50,000
+Training      : 25,000
+Testing       : 25,000
+Vocabulary    : 10,000 words
+Classes       : 2
+```
+
+### Target Classes
+
+```text
+0 → Negative
+1 → Positive
+```
+
+The notebook verifies the training and testing shapes as:
+
+```text
+Training data shape: (25000,)
+Testing data shape:  (25000,)
+```
+
+---
+
+## Text Preprocessing
+
+The project uses the IMDB word-index representation.
+
+### Processing Steps
+
+1. Convert text to lowercase.
+2. Split the review into words.
+3. Convert words into IMDB vocabulary indices.
+4. Use the unknown-token representation for words outside the vocabulary.
+5. Convert the review into an integer sequence.
+6. Pad/truncate sequences to a fixed length of **500 tokens**.
+
+The application implements additional protection against embedding-index errors by mapping vocabulary indices outside the configured 10,000-word range to the unknown token.
+
+---
+
+## Model Architecture
+
+The trained model is stored as:
+
+```text
+simple_rnn_imdb.h5
+```
+
+### Architecture
+
+```text
+Input
+  ↓
+Embedding
+10,000 vocabulary
+128-dimensional vectors
+  ↓
+SimpleRNN
+128 units
+  ↓
+Dense
+1 neuron
+Sigmoid
+  ↓
+Sentiment Probability
+```
+
+### Verified Model Summary
+
+```text
+Layer                  Output Shape          Parameters
+-------------------------------------------------------
+Embedding              (None, 500, 128)      1,280,000
+SimpleRNN              (None, 128)              32,896
+Dense                  (None, 1)                   129
+-------------------------------------------------------
+Total Parameters                              1,313,025
+```
+
+All **1,313,025 parameters** are trainable in the committed model summary.
+
+---
+
+## Training Configuration
+
+The project uses:
+
+```text
+Loss Function : Binary Crossentropy
+Optimizer     : Adam
+Output        : Sigmoid
+Task          : Binary Classification
+```
+
+---
+
+## Prediction Logic
+
+The output of the neural network is interpreted as a probability score.
+
+```python
+sentiment = "Positive" if score > 0.5 else "Negative"
+```
+
+Therefore:
+
+```text
+Score > 0.5  → Positive
+Score ≤ 0.5  → Negative
+```
+
+---
+
+## Streamlit Application
+
+The interactive application is implemented in:
+
+```text
+main.py
+```
+
+Run the application using:
+
+```bash
+streamlit run main.py
+```
+
+The application provides:
+
+* Movie review text area
+* Classify button
+* Input validation
+* Sentiment result
+* Prediction probability
+* Emoji-based result display
+
+---
+
+## Example Prediction
+
+The committed `prediction.ipynb` contains this example:
+
+```text
+This movie was fantastic! The acting was great and the plot was thrilling.
+```
+
+The stored notebook output is:
+
+```text
+Prediction Score: 0.42432793974876404
+Sentiment: Negative
+```
+
+Because the score is below the configured threshold of `0.5`, the notebook classifies this example as Negative.
+
+> Note: this is a single stored inference example and should not be interpreted as overall model accuracy.
+
+---
+
+## Project Structure
+
+```text
 Movie-Review-Sentiment-Analysis/
 │
-├── SimpleRNN/
-│   ├── main.py                # Streamlit web application
-│   ├── prediction.ipynb       # Inference notebook
-│   ├── embedding.ipynb        # Word embedding experiments
-│   ├── simplernn.ipynb        # Training code using Simple RNN
-│   ├── simple_rnn_imdb.h5     # Trained RNN model
-│   └── requirements.txt       # Dependencies
+├── .devcontainer/
+│   └── devcontainer.json
 │
-└── README.md                  # Project documentation
-🛠 Technologies Used
-Library	Purpose
-TensorFlow / Keras	Deep learning model
-NumPy	Numeric processing
-Streamlit	Web application UI
-scikit-learn	Evaluation utilities
-Matplotlib	Visualizations
-IMDB Dataset	Sentiment data
-📥 Dataset Information
+├── README.md
+├── main.py
+├── embedding.ipynb
+├── prediction.ipynb
+├── simplernn.ipynb
+├── simple_rnn_imdb.h5
+└── requirements.txt
+```
 
-We use the IMDB dataset, a popular dataset for sentiment analysis:
+---
 
-50,000 movie reviews
+## File Description
 
-Binary sentiment: 0 = Negative, 1 = Positive
+### `main.py`
 
-Pre-tokenized into integer sequences
+Streamlit application responsible for:
 
-Top 10,000 words vocabulary used
+* Loading the IMDB word index
+* Loading the trained model
+* Preprocessing user reviews
+* Padding sequences
+* Performing sentiment prediction
+* Displaying the result
 
-🧪 Model Architecture
+### `simplernn.ipynb`
 
-The model architecture is simple yet effective:
-Embedding (10000 → 128)
-SimpleRNN (128 units, ReLU)
-Dense (1, Sigmoid)
-Loss Function: Binary Crossentropy
-Optimizer: Adam
-Metrics: Accuracy
-▶️ How to Run the Streamlit App
-1️⃣ Create & activate environment
-conda create -n myenv python=3.10 -y
-conda activate myenv
-2️⃣ Install dependencies
+Training notebook containing the SimpleRNN development workflow.
+
+### `embedding.ipynb`
+
+Notebook used to inspect and explore the embedding representation.
+
+### `prediction.ipynb`
+
+Inference notebook containing:
+
+* Model loading
+* Review preprocessing
+* Prediction function
+* Example inference
+
+### `simple_rnn_imdb.h5`
+
+Serialized trained TensorFlow/Keras model.
+
+### `requirements.txt`
+
+Project dependencies.
+
+---
+
+## Requirements
+
+The repository currently contains:
+
+```text
+tensorflow-cpu==2.12.0
+streamlit
+numpy
+pandas
+scikit-learn
+tensorboard
+matplotlib
+scikeras
+```
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/MSIVAPAPARAO13/Movie-Review-Sentiment-Analysis.git
+cd Movie-Review-Sentiment-Analysis
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
-pip install tensorflow==2.15.0
-3️⃣ Run the Streamlit app
-cd SimpleRNN
+```
+
+---
+
+## Run the Application
+
+```bash
 streamlit run main.py
+```
 
-App opens automatically at:
+By default, Streamlit runs on:
 
+```text
 http://localhost:8501
-🧩 Web App Features
+```
 
-Enter any movie review text
+---
 
-Model preprocesses & pads input
+## Development Container
 
-Predicts sentiment instantly
+The repository also contains:
 
-Shows prediction probability
+```text
+.devcontainer/devcontainer.json
+```
 
-Emoji-based output visual feedback
+The configured development environment:
 
-📊 Example Predictions
+* Uses a Python Dev Container image
+* Installs the project requirements
+* Starts the Streamlit application
+* Exposes port `8501`
+* Opens the application preview automatically
 
-Input:
+---
 
-This movie was absolutely fantastic! Loved it.
+## Technologies Used
 
-Output:
+| Technology         | Purpose               |
+| ------------------ | --------------------- |
+| Python             | Programming           |
+| TensorFlow / Keras | Deep Learning         |
+| SimpleRNN          | Sequence modeling     |
+| IMDB Dataset       | Sentiment data        |
+| NumPy              | Numerical operations  |
+| Pandas             | Data processing       |
+| Scikit-learn       | ML utilities          |
+| Streamlit          | Web application       |
+| Matplotlib         | Visualization         |
+| TensorBoard        | Deep Learning tooling |
 
-Sentiment: Positive 😊
-Prediction Score: 0.9453
+---
 
-Input:
+## Key Learning Outcomes
 
-The movie was boring and poorly directed.
+* Understanding NLP text representation
+* Working with pre-tokenized datasets
+* Building word embeddings
+* Preparing sequential inputs
+* Understanding recurrent neural networks
+* Implementing SimpleRNN architectures
+* Performing binary sentiment classification
+* Saving and loading trained neural networks
+* Building an interactive ML application with Streamlit
 
-Output:
+---
 
-Sentiment: Negative 😞
-Prediction Score: 0.1247
-🧱 Preprocessing Pipeline
+## Future Improvements
 
-✔ Lowercasing
-✔ Tokenization
-✔ Convert words → IMDB word index
-✔ Replace out-of-vocabulary words with “unknown” token
-✔ Fixed-length padding (500 tokens)
+Potential extensions include:
 
-🧠 Why Simple RNN?
+* LSTM-based sentiment classification
+* GRU-based architecture
+* Bidirectional RNN
+* Attention mechanism
+* GloVe/Word2Vec embeddings
+* Transformer-based sentiment models
+* BERT-based classification
+* Confusion matrix and ROC-AUC reporting
+* Formal test-set metrics
+* Cloud deployment
 
-Easy to understand
+---
 
-Good for short sequences
+## Author
 
-Works as an introduction to sequence modeling
+**Siva Paparao Medisetti**
 
-Helps understand fundamentals before LSTM/GRU/Transformers
+GitHub: https://github.com/MSIVAPAPARAO13
 
-📈 Future Enhancements
+Project Repository:
 
-You can extend this project with:
-
-🔥 LSTM / GRU model
-
-🔥 Bidirectional RNN
-
-🔥 Attention mechanism
-
-🔥 Word2Vec / GloVe embeddings
-
-🔥 Deploy on Render / HuggingFace
-
-🔥 Replace with BERT for higher accuracy
-
-❤️ Author
-
-MSIVAPAPARAO13
-📌 Passionate about Deep Learning, NLP, and AI Projects
-
-GitHub Profile:
-👉 https://github.com/MSIVAPAPARAO13
-
-⭐ Show Your Support
-
-If you found this project helpful:
-
-✔ Star ⭐ the repository
-✔ Share your feedback
-✔ Fork the project and contribute
+https://github.com/MSIVAPAPARAO13/Movie-Review-Sentiment-Analysis
